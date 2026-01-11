@@ -2,7 +2,7 @@ directories:
   # Set this to true if you want the path to video files
   # to match the directory structure of the path to the
   # sourcecode generating that video
-  mirror_module_path: True
+  mirror_module_path: False
   # Where should manim output video and image files?
   output: "output"
   # If you want to use images, manim will look to these folders to find them
@@ -25,7 +25,7 @@ tex:
   executable: "xelatex -no-pdf"
   template_file: "ctex_template.tex"
   intermediate_filetype: "xdv"
-universal_import_line: "from manimlib import *"
+universal_import_line: "from manim_imports_ext import *"
 style:
   font: "Times New Roman"
   background_color: "#333333"

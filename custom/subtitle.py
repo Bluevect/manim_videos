@@ -1,10 +1,12 @@
-from manimlib import *
+from manimlib import TexText
+from manimlib.constants import *
 
 
 class Subtitle(TexText):
     def __init__(self, *tex_strings: str, **kwargs):
-        kwargs["font"] = "monospace"
+        # kwargs["font"] = "monospace"
         kwargs["color"] = WHITE
 
         super().__init__(*tex_strings, **kwargs)
+        self.scale(0.8)
         self.to_edge(DOWN)

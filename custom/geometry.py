@@ -1,4 +1,11 @@
-from manimlib import *
+from manimlib import VGroup
+from manimlib import Dot
+from manimlib import Tex
+from manimlib import Polygon
+from manimlib import Line
+from manimlib import angle_of_vector
+from manimlib import midpoint
+from manimlib.constants import *
 
 
 # Dot with a mark label (Dot Extended)
@@ -19,9 +26,9 @@ class DotX(VGroup):
 
         # Mark letter
         if mark_config:
-            self.mark = SingleStringTex(mark_letter, **mark_config)
+            self.mark = Tex(mark_letter, **mark_config)
         else:
-            self.mark = SingleStringTex(mark_letter)
+            self.mark = Tex(mark_letter)
 
         self.mark.next_to(self.dot, mark_pos)
 
@@ -70,7 +77,7 @@ class TriangleX(VGroup):
 
 
 # Draw a tick of a line defined by two points
-def get_tick(point_a, point_b, width: float = 0.2, color: ManimColor = WHITE):
+def get_tick(point_a: np.ndarray, point_b: np.ndarray, width: float = 0.2, color=WHITE) -> Line:
     vector = point_b - point_a
     line_angle = angle_of_vector(vector)
     tick_angle = PI / 2 + line_angle
@@ -84,49 +91,49 @@ def get_tick(point_a, point_b, width: float = 0.2, color: ManimColor = WHITE):
 
 
 # Draw double tick of a line defined by two points
-def get_double_tick(point_a, point_b, width: float = 0.2, color: ManimColor = WHITE):
-    buff = 0.02
-    vector_ab = point_b - point_a
-    vector_ba = point_a - point_b
+def get_double_tick(point_a: np.ndarray, point_b: np.ndarray, width: float = 0.2, color=WHITE) -> VGroup:
+    buff = 0.07
+    unit_vector_ab = get_unit_vector_on_direction(point_b - point_a)
+
     tick1 = get_tick(point_a, point_b, width=width, color=color)
-    tick1.shift(vector_ba * buff)
+    tick1.shift(unit_vector_ab * buff)
     tick2 = get_tick(point_a, point_b, width=width, color=color)
-    tick2.shift(vector_ab * buff)
+    tick2.shift(-unit_vector_ab * buff)
+
     return VGroup(tick1, tick2)
 
 
-def get_unit_vector_on_direction(vector) -> np.ndarray:
+def get_unit_vector_on_direction(vector: np.ndarray) -> np.ndarray:
     angle = angle_of_vector(vector)
     return np.array([np.cos(angle), np.sin(angle), 0])
 
 
-# Line with ticks (Deprecated)
-# class TickedLine(VGroup):
-#     def __init__(
-#             self,
-#             start: np.ndarray,
-#             end: np.ndarray,
-#             line_config=None,
-#             tick_width=0.2,
-#             tick_color=WHITE,
-#             **kwargs
-#     ):
-#         # Line
-#         if line_config:
-#             line = Line(start, end, **line_config)
-#         else:
-#             line = Line(start, end)
-#         self.line = line
-#
-#         # Tick
-#         line_angle = line.get_angle()
-#         tick_angle = 90 + line_angle
-#         mid_point = midpoint(start, end)
-#         half_width = tick_width / 2
-#
-#         tick = Line(half_width * LEFT, half_width * RIGHT, color=tick_color)
-#         tick.move_to(mid_point)
-#         tick.rotate(tick_angle)
-#         self.tick = tick
-#
-#         super().__init__(line, tick, **kwargs)
+# Get the vertical point coord of C to line AB
+def get_vertical_point(point_a: np.ndarray, point_b: np.ndarray, point_c: np.ndarray) -> np.ndarray:
+    x1 = point_a[0]
+    y1 = point_a[1]
+    x2 = point_b[0]
+    y2 = point_b[1]
+    x0 = point_c[0]
+    y0 = point_c[1]
+
+    # Brute-force calculation
+    x = ((x0 * (x2 - x1) ** 2 + x1 * (y2 - y1) ** 2 + (y0 - y1) * (x2 - x1) * (y2 - y1)) /
+         ((y2 - y1) ** 2 + (x2 - x1) ** 2))
+    y = (y2 - y1) / (x2 - x1) * (x - x1) + y1
+
+    return np.array([x, y, 0])
+
+
+# Get the angle value of 3 given points (point_b as the vertex)
+def get_angle_of_3_points(point_a: np.ndarray, point_b: np.ndarray, point_c: np.ndarray):
+    vector_ba = point_a - point_b
+    vector_bc = point_c - point_b
+    x1 = vector_ba[0]
+    y1 = vector_ba[1]
+    x2 = vector_bc[0]
+    y2 = vector_bc[1]
+
+    cos_theta = (x1 * x2 + y1 * y2) / (np.sqrt(x1 ** 2 + y1 ** 2) * np.sqrt(x2 ** 2 + y2 ** 2))
+    return np.arccos(cos_theta)
+

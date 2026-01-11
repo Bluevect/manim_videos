@@ -4,7 +4,10 @@
 # Manim outputs
 /output
 /temp
-/2022/output/
-/2022/temp/
-/2024/output/
-/2024/temp/
+/__pycache__
+/_2022/output/
+/_2022/temp/
+/_2022/__pycache__/
+/_2026/output/
+/_2026/temp/
+/_2026/__pycache__/
